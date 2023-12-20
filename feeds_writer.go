@@ -37,6 +37,7 @@ type RSS struct {
 type Writer interface {
 	write(body string)
 	writeLink(title string, url string, newline bool, readingTime string) string
+	writeDescription(description string, newline bool) string
 	writeSummary(content string, newline bool) string
 	writeFavicon(s *gofeed.Feed) string
 }
@@ -184,9 +185,16 @@ func generateFeedItems(w Writer, feed *gofeed.Feed, rss RSS) string {
 			items += getInstapaperLink(item.Link)
 		}
 
+		var description = htmlToMarkdown(item.Description);
+
 		// Support RSS with no Title (such as Mastodon), use Description instead
 		if title == "" {
-			title = stripHtmlRegex(item.Description)
+			var lines = strings.Split(description, "\n")
+			if len(lines) == 1 {
+				title = description;
+			} else {
+  			title = lines[0] + "…";
+			}
 		}
 
 		timeInMin := ""
@@ -195,6 +203,9 @@ func generateFeedItems(w Writer, feed *gofeed.Feed, rss RSS) string {
 		}
 
 		items += w.writeLink(title, link, true, timeInMin)
+		if !rss.summarize && !terminalMode {
+			items += w.writeDescription(description, true)
+		}
 		if rss.summarize {
 			items += w.writeSummary(summary, true)
 		}
@@ -222,7 +233,12 @@ func writeFeed(w Writer, feed *gofeed.Feed, items string) {
 
 // Returns the title and link for the given feed item
 func getFeedTitleAndLink(item *gofeed.Item) (string, string) {
-	return item.Title, item.Link
+	// Return no title for nitter, treat like Mastodon
+	if strings.Contains(item.Link, "nitter") {
+		return "", item.Link
+	} else {
+		return item.Title, item.Link
+	}
 }
 
 // Returns the summary for the given feed item

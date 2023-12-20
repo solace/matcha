@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"regexp"
 	"path/filepath"
 )
 
@@ -32,6 +33,18 @@ func (w MarkdownWriter) writeLink(title string, url string, newline bool, readin
 		content += "\n"
 	}
 	return content
+}
+
+func (w MarkdownWriter) writeDescription(description string, newline bool) string {
+	if description == "" {
+		return description
+	}
+	var regexPattern = regexp.MustCompile(`(?m)^\s*`)
+	description = regexPattern.ReplaceAllString(description, "> ")
+	if newline {
+		description += "  \n\n"
+	}
+	return description
 }
 
 func (w MarkdownWriter) writeSummary(content string, newline bool) string {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/mmcdole/gofeed"
 	"github.com/savioxavier/termlink"
 )
@@ -23,6 +22,13 @@ func (w TerminalWriter) writeLink(title string, url string, newline bool, readin
 		content += "\n"
 	}
 	return content
+}
+
+func (w TerminalWriter) writeDescription(description string, newline bool) string {
+	if newline {
+		description += "\n"
+	}
+	return description
 }
 
 func (w TerminalWriter) writeSummary(content string, newline bool) string {

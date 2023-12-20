@@ -17,6 +17,14 @@
 
 Matcha is a daily digest generator for your RSS feeds and interested topics/keywords. By using any markdown file viewer (such as [Obsidian](https://obsidian.md/)) or directly from terminal (-t option), you can read your RSS articles whenever you want at your pace, thus avoiding FOMO throughout the day.
 
+### Fork Notes
+
+This fork outputs Tweets and Mastodon posts in a different format to other feed sources.
+
+In both terminal and markdown, the first line of the post is used as the title link with an ellipsis if there are multiple lines.
+
+In markdown, the full content of the post will be rendered as a blockquote if a summary is not requested. 
+
 ### In Obsidian
 <img width="900" alt="image" src="https://user-images.githubusercontent.com/3144671/219786799-55db70c1-5860-4d4b-9df4-b81a89f8161d.png">
 

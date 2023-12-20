@@ -2,7 +2,6 @@
 .obsidian/
 .DS_Store
 .lite_project.lua
-*.md
 
 /bin/
 config.yaml
