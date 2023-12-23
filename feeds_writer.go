@@ -161,6 +161,10 @@ func parseFeed(fp *gofeed.Parser, url string, limit int) *gofeed.Feed {
 func generateFeedItems(w Writer, feed *gofeed.Feed, rss RSS) string {
 	var items string
 
+	if strings.Contains(feed.Generator, "Mastodon") || strings.Contains(rss.url, "nitter") {
+		reverseArray(feed.Items)
+	}
+
 	for _, item := range feed.Items {
 		seen, seen_today, summary := isSeenArticle(item)
 		if seen {
@@ -188,13 +192,20 @@ func generateFeedItems(w Writer, feed *gofeed.Feed, rss RSS) string {
 		var description = htmlToMarkdown(item.Description);
 
 		// Support RSS with no Title (such as Mastodon), use Description instead
+		var hasTitle = true;
 		if title == "" {
+		  hasTitle = false;
 			var lines = strings.Split(description, "\n")
 			if len(lines) == 1 {
 				title = description;
 			} else {
-  			title = lines[0] + "…";
+  			title = truncateString(lines[0], 80);
 			}
+		}
+
+		// Add the Twitter link if nitter
+		if strings.Contains(rss.url, "nitter") && !terminalMode {
+			items += getTwitterLink(item.Link)
 		}
 
 		timeInMin := ""
@@ -203,7 +214,7 @@ func generateFeedItems(w Writer, feed *gofeed.Feed, rss RSS) string {
 		}
 
 		items += w.writeLink(title, link, true, timeInMin)
-		if !rss.summarize && !terminalMode {
+		if !hasTitle && !rss.summarize && !terminalMode {
 			items += w.writeDescription(description, true)
 		}
 		if rss.summarize {
@@ -279,6 +290,15 @@ func addToSeenTable(link string, summary string) {
 
 func getInstapaperLink(link string) string {
 	return "[<img height=\"16\" src=\"https://staticinstapaper.s3.dualstack.us-west-2.amazonaws.com/img/favicon.png\">](https://www.instapaper.com/hello2?url=" + link + ")"
+}
+
+func getTwitterLink(link string) string {
+	u, err := url.Parse(link)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return "[🐦](https://www.twitter.com" + u.Path + ")"
 }
 
 func isSeenArticle(item *gofeed.Item) (seen bool, today bool, summaryText string) {
