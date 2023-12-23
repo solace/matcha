@@ -28,7 +28,7 @@ potentially multiline content as link titles is impractical.
   threads
 * Feed items without titles have the link set to the first line truncated to 80 characters
 * This fork outputs Tweets and Mastodon posts in a different format to other feed sources
-* In markdown mode, unsummarised feeds without a title will include the description as a blockquote after the link
+  In markdown mode, unsummarised feeds without a title will include the description as a blockquote after the link
 * Prefixes a twitter link to nitter title links for ease of [Omnivore](https://omnivore.app/)ing as nitter threads 
   don't render as nicely in Omnivore
 
